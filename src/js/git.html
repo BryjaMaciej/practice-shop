@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        .done {
+            text-decoration: line-through;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div>
+        <h1>Manipulacja DOM</h1>
+        <p>Document Object Model</p>
+        <p><b>Lista Zadań: </b></p>
+        <ul>
+            <li class="done">Przerobic kurs Reacta <button class="btn btn-sm">X</button></li>
+            <li>Zrobic zakupy <button>X</button></li>
+            <li>Wykąpac psa <button>X</button>
+                <button class="edit">Edytuj</button>
+            </li>
+        </ul>
+
+        <form id="task-form">
+            <div>
+                <label for="form-label" form="task-form">
+                    Nowe zadanie:
+                </label>
+                <input class="form-control" type="text" name="title" value="przeczyta ksiązkę" id="task-title">
+                <div class="form-text">Dodaj krótki ...</div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="add">Dodaj</button>
+        </form>
+        <a href="http://tworcastron.pl">Czytaj Więcej</a>
+    </div>
+    <script>
+
+        document.querySelector('#task-form').addEventListener('submit', addItem);
+        document.querySelectorAll('ul li').forEach(li => {
+            li.addEventListener('click', toggleDone);
+            li.querySelector('button').addEventListener('click', removeItem);
+            li.querySelector('.edit')?.addEventListener('click', editItem);
+        })
+
+        function editItem() {
+            console.log('edit kliknięty');
+            event.stopPropagation();
+        }
+
+        document.querySelector(`#task-title`).addEventListener('keyup', toggleButtonDisable);
+         function toggleButtonDisable(e) {
+            const input = e.target;
+            const button = document.querySelector('#add');
+            if(input.value) {
+                button.disabled = false;
+            } else {
+                button.disabled = true;
+            }
+        }
+
+        function addItem(e) {
+            e.preventDefault();
+            const ul = document.querySelector('ul');
+
+            const text = document.querySelector('#task-title').value
+            //element id
+            const id = Date.now();
+            // // li
+            // const newItem = document.createElement('li');
+            // newItem.innerText = text;
+            // newItem.dataset.id = id;
+            // 
+            // //button
+            // const button = document.createElement('button')
+            // button.innerText = "X";
+            // 
+            // newItem.appendChild(button);
+            // //li > ul
+            // ul.appendChild(newItem);
+
+            const html = `<li data-id="${id}">
+            ${text} 
+            <button
+            class="btn btn-sm">X</button>
+            </li>`;
+            ul.insertAdjacentHTML('beforeend', html);
+            //dodaj event
+            document.querySelector(`[data-id="${id}"]`)
+                .addEventListener('click', toggleDone);
+            //button
+            document.querySelector(`[data-id="${id}"]`)
+                .querySelector('button')
+                .addEventListener('click', removeItem);
+
+            //wyczyszczenie inputu
+            document.querySelector('#task-title').value = '';
+        }
+
+        function removeItem(event) {
+            const button = event.target;
+            const li = button.parentNode;
+
+            // const lis = document.querySelectorAll('ul li');
+            // const li = [...lis].find(er => er.dataset.id == id);
+            li.remove();
+        }
+
+        //skreślanie wpisu
+        function toggleDone() {
+            const li = event.target;
+
+            if (li.classList.contains('done')) {
+                li.classList.remove('done');
+            } else {
+                li.classList.add('done');
+            }
+            console.log('li kliknięte');
+            //event.stopPropagation();
+        }
+        document.querySelector('ul').addEventListener('click', () => console.log('ul kliknięte'));
+        document.querySelector('div').addEventListener('click', () => console.log('div kliknięty'));
+
+    </script>
+</body>
+
+</html>
